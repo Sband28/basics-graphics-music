@@ -24,6 +24,27 @@ module board_specific_top
               w_x           = $clog2 ( screen_width  ),
               w_y           = $clog2 ( screen_height )
 )
+// Look1 graphics
+    wire                    display_on;
+    wire [ w_x       - 1:0] x;
+    wire [ w_y       - 1:0] y;
+    wire [ w_red     - 1:0] red;
+    wire [ w_green   - 1:0] green;
+    wire [ w_blue    - 1:0] blue;
+    wire                    VGA_HS;
+    wire                    VGA_VS;
+    
+    wire [ w_red     - 1:0] VGA_R = display_on ? red   : '0;
+    wire [ w_green   - 1:0] VGA_G = display_on ? green : '0;
+    wire [ w_blue    - 1:0] VGA_B = display_on ? blue  : '0;
+// endLook1
+// Look2
+        .x        ( x         ),
+        .y        ( y         ),
+        .red      ( red       ),
+        .green    ( green     ),
+        .blue     ( blue      ),
+// end of look2
 (
     input                clk,
     input  [w_key - 1:0] btn,
@@ -188,16 +209,14 @@ module board_specific_top
     //------------------------------------------------------------------------
 
     `ifdef UNDEFINED
-
+// look3
     `ifdef INSTANTIATE_GRAPHICS_INTERFACE_MODULE
-
         wire [9:0] x10; assign x = x10;
         wire [9:0] y10; assign y = y10;
-
         vga
         # (
-            .CLK_MHZ     ( clk_mhz     ),
-            .PIXEL_MHZ   ( pixel_mhz   )
+            .CLK_MHZ     ( clk_mhz    ),
+            .PIXEL_MHZ   ( pixel_mhz  )
         )
         i_vga
         (
@@ -205,13 +224,17 @@ module board_specific_top
             .rst         ( rst        ),
             .hsync       ( VGA_HS     ),
             .vsync       ( VGA_VS     ),
-            .display_on  (            ),
+            .display_on  ( display_on ),
             .hpos        ( x10        ),
             .vpos        ( y10        ),
             .pixel_clk   (            )
         );
-
     `endif
+// end of look3
+ //Look4
+    //assign GPIO_0= { VGA_B, VGA_R };
+    //assign GPIO_1 = { VGA_HS, VGA_VS, 2'bz, VGA_G };
+  
 
     //------------------------------------------------------------------------
 
